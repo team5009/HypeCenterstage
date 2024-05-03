@@ -12,7 +12,7 @@ class Motors(val fl: DcMotorEx, val fr: DcMotorEx, val br: DcMotorEx, val bl: Dc
 		val maxPower = abs(drive) + abs(strafe) + abs(rotate)
 		val max = if (maxPower < 0.15) maxPower / 0.15 else maxOf(1.0, maxPower/0.8)/powerRatio.get() // 0.8 is the max power of the motors, if the number is greater than 0.8, it will be divided by 0.8
 
-		fl.power = (drive - strafe + rotate) / max
+		fl.power = -(drive - strafe + rotate) / max
 		fr.power = (drive + strafe - rotate) / max
 		bl.power = (drive - strafe - rotate) / max
 		br.power = (drive + strafe + rotate) / max

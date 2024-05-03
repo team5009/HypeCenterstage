@@ -9,6 +9,9 @@ import com.acmerobotics.dashboard.config.Config
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
+import org.firstinspires.ftc.teamcode.DriveConstants
+import org.firstinspires.ftc.teamcode.RotateConstants
+import org.firstinspires.ftc.teamcode.StrafeConstants
 import org.firstinspires.ftc.teamcode.instances.autonomous.MainAutonomous
 
 @Autonomous(name = "PathTest", group = "Testing")
@@ -65,31 +68,4 @@ class PathTest: LinearOpMode() {
 			pathExecutor.execute()
 		}
 	}
-}
-
-@Config
-object DriveConstants {
-	@JvmField var GainSpeed = 0.05
-	@JvmField var AccelerationLimit = 1.0
-	@JvmField var DefaultOutputLimit = 0.8
-	@JvmField var Tolerance = 1.0
-	@JvmField var Deadband = 0.75
-}
-
-@Config
-object StrafeConstants {
-	@JvmField var GainSpeed = 0.1
-	@JvmField var AccelerationLimit = 1.5
-	@JvmField var DefaultOutputLimit = 1.0
-	@JvmField var Tolerance = 1.0
-	@JvmField var Deadband = 0.75
-}
-
-@Config
-object RotateConstants {
-	@JvmField var GainSpeed = 0.01
-	@JvmField var AccelerationLimit = 1.0
-	@JvmField var DefaultOutputLimit = 1.0
-	@JvmField var Tolerance = 4.0
-	@JvmField var Deadband = 1.0
 }

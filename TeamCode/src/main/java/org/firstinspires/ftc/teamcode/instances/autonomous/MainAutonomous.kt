@@ -8,7 +8,6 @@ import com.acmerobotics.dashboard.config.Config
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
 import org.firstinspires.ftc.teamcode.OdometryValues
 import org.firstinspires.ftc.teamcode.Robot
-import org.firstinspires.ftc.teamcode.autonomous.listener
 
 class MainAutonomous(private val instance: LinearOpMode, listener: EventListener) {
 	private val bot = Robot(instance)
@@ -18,13 +17,13 @@ class MainAutonomous(private val instance: LinearOpMode, listener: EventListener
 
 	init {
 		odometry.setConstants(OdometryValues.distanceBack, OdometryValues.distanceLeftRight)
-		listener.Subscribe(OutTakePixels(odometry))
+		listener.Subscribe(OutTakePixels(odometry, listener))
 		listener.Subscribe(SlowDownMovement(motors))
 		listener.Subscribe(NormalizeMovement(motors))
 
 	}
 
-	class OutTakePixels(private val odometry: Odometry) : Event("YELLOW_PIXEL") {
+	class OutTakePixels(private val odometry: Odometry, private val listener: EventListener) : Event("YELLOW_PIXEL") {
 		override suspend fun run() {
 			listener.call("YELLOW_PIXEL_FINISH")
 		}

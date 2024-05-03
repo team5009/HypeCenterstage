@@ -25,16 +25,17 @@ class HyperionPath(private val opMode: LinearOpMode, private val listener: Event
 		movement?.start(generatedBezier)
 	}
 
-	fun continuousLine(points: List<Point>) {
-		movement?.start(points as MutableList<Point>)
+	fun continuousLine(points: MutableList<Point>) {
+		movement?.start(points)
 	}
 
 	fun end(event: EventCall) {
 		listener.call(event.message)
 		movement!!.stopMovement()
+		listener.clearScopes()
 	}
 
-	fun wait(time: Long, event: EventCall) {
+	fun wait(time: Long, event: EventCall = EventCall("")) {
 		listener.call(event.message)
 		val currentPosition = odometry!!.getLocation()
 		val timer = ElapsedTime()
@@ -43,16 +44,25 @@ class HyperionPath(private val opMode: LinearOpMode, private val listener: Event
 		}
 	}
 
-	fun wait(message: String, event: EventCall) {
-		listener.call(message)
+	fun wait(message: String, event: EventCall = EventCall("")) {
+		listener.call(event.message)
 		val currentPosition = odometry!!.getLocation()
+		val stayPoint = Point(currentPosition.x, currentPosition.y, currentPosition.rot)
+
 		val timer = ElapsedTime()
 		var tempVar = ""
 		while(opMode.opModeIsActive() && tempVar != message) {
 			if (listener.value.get() == message) {
 				tempVar = message
 			}
-			movement?.goToPosition(currentPosition)
+			movement?.goToPosition(stayPoint)
+			/*opMode.telemetry.addData("current x", stayPoint.x)
+			opMode.telemetry.addData("current y",stayPoint.y)
+			opMode.telemetry.addData("current x", odometry?.getLocation()!!.x)
+			opMode.telemetry.addData("current y",odometry?.getLocation()!!.y)
+			opMode.telemetry.addData("current y",odometry?.getLocation()!!.rot)
+			opMode.telemetry.addLine("Waiting...")
+			opMode.telemetry.update()*/
 		}
 	}
 

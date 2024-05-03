@@ -18,37 +18,39 @@ class ColorProcessor(var alliance: Alliance, private val optimized: Boolean = tr
 	val center = Point()
 	var position = Position.NONE
 	override fun init(width: Int, height: Int, calibration: CameraCalibration?) {
-		TODO("Not yet implemented")
+		return
 	}
 
 	override fun processFrame(frame: Mat, captureTimeNanos: Long): Any {
 		val contours = mutableListOf<MatOfPoint>()
-		Imgproc.cvtColor(frame, frame, Imgproc.COLOR_RGB2HSV)
-		if (frame.empty()) {
+		val tempFrame = Mat()
+		Imgproc.cvtColor(frame, tempFrame, Imgproc.COLOR_RGB2HSV)
+		if (tempFrame.empty()) {
 			return frame
 		}
 
 		val thresh = Mat()
+
 		val lowHSV = when(alliance) {
-			Alliance.RED -> Scalar(100.0, 90.0, 100.0)
-			Alliance.BLUE -> Scalar(0.0, 10.0, 0.0)
+			Alliance.BLUE -> Scalar(100.0, 90.0, 100.0)
+			Alliance.RED -> Scalar(0.0, 10.0, 0.0)
 		}
 		val highHSV = when(alliance) {
-			Alliance.RED -> Scalar(140.0, 255.0, 255.0)
 			Alliance.BLUE -> Scalar(140.0, 255.0, 255.0)
+			Alliance.RED -> Scalar(15.0, 255.0, 150.0)
 		}
 
 
-		Core.inRange(frame, lowHSV, highHSV, thresh)
+		Core.inRange(tempFrame, lowHSV, highHSV, thresh)
 
 		if (thresh.empty()) {
 			return frame
 		}
 
 		val mask = Mat()
-		Core.bitwise_and(frame, frame, mask, thresh)
+		Core.bitwise_and(tempFrame, tempFrame, mask, thresh)
 
-		val avg = Core.mean(mask)
+		val avg = Core.mean(mask, thresh)
 
 		val scaledMask = Mat()
 		mask.convertTo(scaledMask, -1, 150/avg.`val`[1], 0.0)
@@ -69,7 +71,7 @@ class ColorProcessor(var alliance: Alliance, private val optimized: Boolean = tr
 		Imgproc.findContours(cleanup, contours, contour, Imgproc.RETR_LIST, Imgproc.CHAIN_APPROX_SIMPLE)
 
 		val finalMask = Mat()
-		Core.bitwise_and(frame, frame, finalMask, cleanup)
+		Core.bitwise_and(tempFrame, tempFrame, finalMask, cleanup)
 
 		if (contours.isNotEmpty()) {
 			val biggest = contours.maxByOrNull { Imgproc.contourArea(it) }
@@ -96,13 +98,14 @@ class ColorProcessor(var alliance: Alliance, private val optimized: Boolean = tr
 		position = if (center.x < 0) {
 			Position.NONE
 		} else if (center.x < 200) {
-			Position.LEFT
+			Position.RIGHT
 		} else if (center.x > 200 && center.x < 400) {
 			Position.CENTER
 		} else {
-			Position.RIGHT
+			Position.LEFT
 		}
 
+		tempFrame.release()
 		thresh.release()
 		mask.release()
 		scaledMask.release()
@@ -123,6 +126,6 @@ class ColorProcessor(var alliance: Alliance, private val optimized: Boolean = tr
 		scaleCanvasDensity: Float,
 		userContext: Any?
 	) {
-		TODO("Not yet implemented")
+		return
 	}
 }
